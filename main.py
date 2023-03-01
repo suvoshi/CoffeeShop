@@ -1,7 +1,7 @@
 import sqlite3
 import sys
 
-from PyQt5 import uic
+from UI import ui_file
 from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
 from PyQt5.QtWidgets import QWidget, QTableView, QApplication, QMainWindow, QPushButton
 
@@ -13,7 +13,7 @@ class Menu(QWidget):
 
     def initUI(self):
         db = QSqlDatabase.addDatabase('QSQLITE')
-        db.setDatabaseName('coffee_db.db')
+        db.setDatabaseName('./data/coffee_db.db')
         db.open()
 
         self.view = QTableView(self)
@@ -39,16 +39,16 @@ class Menu(QWidget):
         ex2.show()
 
 
-class EditMenu(QMainWindow):
+class EditMenu(QMainWindow, ui_file.Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi("addEditCoffeeForm.ui", self)
+        self.setupUi(self)
         self.initUI()
         self.pushButton.clicked.connect(self.add)
     
     def initUI(self):
         db = QSqlDatabase.addDatabase('QSQLITE')
-        db.setDatabaseName('coffee_db.db')
+        db.setDatabaseName('./data/coffee_db.db')
         db.open()
 
         model = QSqlTableModel(self, db)
@@ -68,7 +68,7 @@ class EditMenu(QMainWindow):
         packing_volume = self.lineEdit.text()
 
         if '' not in [name, roasting_degree, grounded, taste_info] and price.isdigit():
-            con = sqlite3.connect("coffee_db.db")
+            con = sqlite3.connect("./data/coffee_db.db")
             cur = con.cursor()
             cur.execute("""INSERT INTO menu(name, roasting_degree, grounded, taste_info, price, packing_volume) VALUES (?, ?, ?, ?, ?, ?)""", 
                         (name, roasting_degree, grounded, taste_info, price, packing_volume, )).fetchall()
@@ -76,7 +76,7 @@ class EditMenu(QMainWindow):
             con.close()
 
             db = QSqlDatabase.addDatabase('QSQLITE')
-            db.setDatabaseName('coffee_db.db')
+            db.setDatabaseName('./data/coffee_db.db')
             db.open()
 
             model = QSqlTableModel(self, db)
